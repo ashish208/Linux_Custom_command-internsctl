@@ -1,0 +1,95 @@
+command for intern operationc
+display_version() {
+    echo "internsctl v0.1.0"
+}
+
+display_help() {
+    echo "Usage: internsctl [COMMAND] [OPTIONS]"
+    echo "Custom Linux command for intern operations."
+    echo ""
+    echo "Commands:"
+    echo "  cpu getinfo      Display CPU information"
+    echo "  memory getinfo   Display memory information"
+    echo "  user create      Create a new user"
+    echo "  user list        List all regular users"
+    echo "  file getinfo     Get information about a file"
+    echo ""
+    echo "Options:"
+    echo "  --version        Display version information"
+    echo "  --help           Display this help message"
+}
+
+create_user() {
+    if [ -z "$1" ]; then
+        echo "Error: Missing username. Usage: internsctl user create <username>"
+        exit 1
+    fi
+
+    sudo useradd -m -s /bin/bash "$1"
+    sudo passwd "$1"
+    echo "User $1 created successfully."
+}
+
+list_users() {
+    cut -d: -f1 /etc/passwd
+}
+
+list_sudo_users() {
+    getent group sudo | cut -d: -f4 | tr ',' '\n'
+}
+
+get_file_info() {
+    if [ -z "$1" ]; then
+        echo "Error: Missing file name. Usage: internsctl file getinfo [options] <file-name>"
+        exit 1
+    fi
+
+    file_name="$1"
+
+    echo "File: $file_name"
+    stat -c "Access: %A\nSize(B): %s\nOwner: %U\nModify: %y" "$file_name"
+}
+
+case "$1" in
+    --version)
+        display_version
+        ;;
+    --help)
+        display_help
+        ;;
+    user)
+        shift
+        case "$1" in
+            create)
+                shift
+                create_user "$1"
+                ;;
+            list)
+                list_users
+                ;;
+            *)
+                echo "Error: Unknown user command. Use 'internsctl --help' for usage information."
+                exit 1
+                ;;
+        esac
+        ;;
+    file)
+        shift
+        case "$1" in
+            getinfo)
+                shift
+                get_file_info "$1"
+                ;;
+            *)
+                echo "Error: Unknown file command. Use 'internsctl --help' for usage information."
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        echo "Error: Unknown command. Use 'internsctl --help' for usage information."
+        exit 1
+        ;;
+esac
+
+exit 0
