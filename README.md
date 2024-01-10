@@ -7,5 +7,6 @@
 4. open the editor for the manual and all the content
 5. now test all the commands
 
+![image](https://github.com/ashish208/Linux_Custom_command-internsctl/assets/74979614/f51f722a-1d78-4299-9fe3-bc3a0f29fac6)
 
  
